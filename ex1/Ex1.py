@@ -77,8 +77,8 @@ for (i,j),v in np.ndenumerate(axZ):
 
 
 fig = plt.figure(figsize=(15,6))
-ax1 = fig.add_subplot(121)
-ax2 = fig.add_subplot(122, projection='3d')
+ax1 = fig.add_subplot(122)
+ax2 = fig.add_subplot(121, projection='3d')
 
 # Left plot
 ax1.contour(xx, yy, zz, np.logspace(-2, 3, 20), cmap=plt.cm.jet)
@@ -87,9 +87,16 @@ ax1.scatter(theta[0],theta[1], c='r')
 #Right plot
 ax2.plot_surface(xx, yy, zz, rstride = 1, cstride = 1, alpha = 0.6, cmap = plt.cm.jet)
 ax2.view_init(elev=20, azim=220)
-ax2.set_zlabel('Cost', fontsize = 17)
+ax2.set_zlabel('Cost', fontsize = 25)
 
 for ax in fig.axes:
-    ax.set_xlabel(r'$\theta_0$', fontsize = 17)
-    ax.set_ylabel(r'$\theta_1$', fontsize = 17)
+    ax.set_xlabel(r'$\theta_0$', fontsize = 25)
+    ax.set_ylabel(r'$\theta_1$', fontsize = 25)
     
+
+#Linear regression with multiple variables
+
+data = np.loadtxt('ex1data2.txt', delimiter=",")
+data.shape
+X = np.c_[np.ones(data.shape[0]), data[:,0:-1]]
+Y = np.c_[data[:,-1]]
