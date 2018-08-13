@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt    
-
+from mpl_toolkits.mplot3d import axes3d, Axes3D
+from matplotlib import cm
+import itertools
 
 
 data = np.loadtxt('ex1data1.txt', delimiter=',')
@@ -63,5 +65,31 @@ plt.legend()
 print(theta.T.dot([1, 3.5])*10000)
 print(theta.T.dot([1, 7])*10000)
 
+#Making 3dplot
+axX = np.linspace(-10, 10, 50)
+axY = np.linspace(-1, 4, 50)
+xx, yy = np.meshgrid(axX, axY, indexing='xy')
+zz = np.zeros((axX.size, axY.size))
 
 
+for (i,j),v in np.ndenumerate(axZ):
+    zz[i,j] = cost_fun(startTheta= [[xx[i, j]], [yy[i, j]]], X = X, Y = Y)
+
+
+fig = plt.figure(figsize=(15,6))
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122, projection='3d')
+
+# Left plot
+ax1.contour(xx, yy, zz, np.logspace(-2, 3, 20), cmap=plt.cm.jet)
+ax1.scatter(theta[0],theta[1], c='r')
+
+#Right plot
+ax2.plot_surface(xx, yy, zz, rstride = 1, cstride = 1, alpha = 0.6, cmap = plt.cm.jet)
+ax2.view_init(elev=20, azim=220)
+ax2.set_zlabel('Cost', fontsize = 17)
+
+for ax in fig.axes:
+    ax.set_xlabel(r'$\theta_0$', fontsize = 17)
+    ax.set_ylabel(r'$\theta_1$', fontsize = 17)
+    
