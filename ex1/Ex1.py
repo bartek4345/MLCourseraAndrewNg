@@ -72,7 +72,7 @@ xx, yy = np.meshgrid(axX, axY, indexing='xy')
 zz = np.zeros((axX.size, axY.size))
 
 
-for (i,j),v in np.ndenumerate(axZ):
+for (i,j),v in np.ndenumerate(zz):
     zz[i,j] = cost_fun(startTheta= [[xx[i, j]], [yy[i, j]]], X = X, Y = Y)
 
 
@@ -100,3 +100,42 @@ data = np.loadtxt('ex1data2.txt', delimiter=",")
 data.shape
 X = np.c_[np.ones(data.shape[0]), data[:,0:-1]]
 Y = np.c_[data[:,-1]]
+
+#Feature Normalization
+
+X_fn = X.copy()
+means, stds = [], []
+for col in range(X_fn.shape[1]):
+    means.append(np.mean(X[:, col]))
+    stds.append(np.std(X[:, col]))
+    if col != 0:
+        X_fn[:, col] = (X_fn[:, col] - means[col])/stds[col]
+
+#Gradient Descent
+
+#Ploting the gradient descent steps for different alpha
+plt.figure()
+for alpha in np.linspace(0.01, 1, 50):
+    theta , Cost_J = gradient_descent(theta = np.zeros([X_fn.shape[1], 1]), X = X_fn, Y = Y, iterations= 50, alpha= alpha)
+    plt.plot(Cost_J)
+
+#For alpha 0.05
+theta , Cost_J = gradient_descent(theta = np.zeros([X_fn.shape[1], 1]), X = X_fn, Y = Y, iterations= 50, alpha= 0.1)
+plt.figure()
+plt.plot(Cost_J)
+
+#Predicting price of house with 1650 square feet and 3 bedrooms
+ypred = np.array([1650, 3])
+ypredscaled = []
+for x in range(len(ypred)):
+    ypredscaled.append((ypred[x] - means[x+1])/stds[x+1])
+ypredscaled.insert(0, 1)
+#Result
+hip_fun(ypredscaled, theta)
+
+#Normal Equation
+def normalEqn(X, y):
+    return (np.dot(np.dot(np.linalg.inv(np.dot(X.T, X)), X.T), y))
+    
+#Result
+hip_fun([1, 1650, 3], normalEqn(X,Y))
