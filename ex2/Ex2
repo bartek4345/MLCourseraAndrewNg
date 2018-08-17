@@ -1,0 +1,17 @@
+import numpy as np
+import matplotlib.pyplot as plt    
+import itertools
+
+#loading dataset
+data = np.loadtxt('ex2data1.txt', delimiter= ',')
+
+#Making scatterlot
+passedData = data[:, 2] == 1
+failedData = data[:, 2] == 0
+
+axes = plt.gca()
+axes.scatter(data[passedData][:, 0], data[passedData][:, 1], c = 'black', label = "Admitted")
+axes.scatter(data[failedData][:, 0], data[failedData][:, 1], c = 'yellow', label = "Not admitted")
+axes.set_xlabel('Exam 1 score')
+axes.set_ylabel('Exam 2 score')
+axes.legend(loc = 3)
