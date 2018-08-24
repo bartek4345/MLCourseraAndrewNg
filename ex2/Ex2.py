@@ -6,7 +6,8 @@ from scipy import optimize
 
 #loading dataset
 data = np.loadtxt('ex2data1.txt', delimiter= ',')
-y = np.array(data[:, -1])
+y = np.array(data[:,-1])
+y = y.reshape((-1,1))
 X = np.array(data[:, 0:-1])
 X = np.insert(X, 0, 1, axis = 1)
 m = y.size
@@ -23,18 +24,38 @@ axes.legend(loc = 3)
 
 #Implementation of hypothesis function
 def hypFun(theta, X):
-    return expit(np.dot(X,theta))    
+    return expit(np.dot(X, theta))    
 
 #Implementation of Cost function
-def costFun(X, y, theta):
-    regPos = np.dot(-y, np.log(hypFun(theta,X)))
-    regNeg = np.dot(1-y,np.log(1 - hypFun(theta,X)))
-    Cost = float((1./y.shape[0]) * (np.sum(regPos - regNeg)))
+def costFun(theta, X, y):
+    regPos = np.dot(-np.array(y).T, np.log(hypFun(theta,X)))
+    regNeg = np.dot(1-np.array(y).T,np.log(1 - hypFun(theta,X)))
+    Cost = float((1./y.shape[0]) * np.sum(regPos - regNeg))
     #grad = 1 / y.shape[0] * (hypFun(theta,X) - y).dot(X)
     return Cost
+
+
 #Testing cost function - should be about 0.69
-costFun(X, y, np.zeros((X.shape[1], 1)))
+initial_theta = np.zeros((X.shape[1],1))
+costFun(initial_theta, X, y)
 
-result = optimize.fmin(costFun, x0=np.zeros((X.shape[1],1)), args=(X, y), maxiter=400, full_output=True)
-result
+#Optimazing cost function
+def optimizeTheta(mytheta,X,y):
+    result = optimize.fmin(costFun, x0=mytheta, args=(X, y), maxiter=400, full_output=True)
+    return result
 
+#optimization result - Cost should be ~0.203
+result = optimizeTheta(initial_theta,X,y)
+print(result)
+theta = result[0]
+#Prediction for exam 1 score = 45 and exam 2 score = 85
+print(hypFun(theta,np.array([1, 45.,85.])))
+
+#Checking accuracy
+def predFun(theta, X, threshold = 0.5):
+    return(hypFun(theta, X) >= threshold)
+
+predictions = predFun(theta, X).astype('int')
+print("Accuracy {}%".format(100*sum(predictions == y.ravel())/predictions.size))
+
+#Plloting decision boundry
